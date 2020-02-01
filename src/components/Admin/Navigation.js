@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import store from 'store';
-import { UPDATE_FRAME_REQUEST } from './ducks';
+import { UPDATE_FRAME_REQUEST } from '../../ducks';
 
 const Wrapper = styled.div`
   width: 15%;
