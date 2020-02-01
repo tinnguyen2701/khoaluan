@@ -9,6 +9,7 @@ const passport = require('passport');
 
 const admin = require('./routes/admin');
 const posts = require('./routes/posts');
+const postsNavigation = require('./routes/postsNavigation');
 // const Account = require('./models/account');
 // var http = require('http');
 
@@ -42,6 +43,7 @@ require('./config/passport')(passport);
 
 app.use('/api/auth', admin);
 app.use('/api/posts', posts);
+app.use('/api/postsNavigation', postsNavigation);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../build')));

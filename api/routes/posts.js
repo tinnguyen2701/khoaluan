@@ -7,10 +7,10 @@ const logger = require('../utils/logger');
 
 postRouter.get('/', async (req, res) => {
   const page = req.query.item;
-  console.log(page);
 
   if (page === 'About') {
     await Overview.find({})
+      .sort({ _id: -1 })
       .then(posts => {
         return res.status(200).send(posts);
       })
@@ -20,6 +20,7 @@ postRouter.get('/', async (req, res) => {
       });
   } else if (page === 'Document') {
     await Manual.find({})
+      .sort({ _id: -1 })
       .then(posts => {
         return res.status(200).send(posts);
       })
@@ -29,6 +30,31 @@ postRouter.get('/', async (req, res) => {
       });
   } else {
     return res.status(500).send('Dataproxy went wrong when get all the posts');
+  }
+});
+
+postRouter.get('/post', async (req, res) => {
+  const { item, name } = req.query;
+  if (item === 'About') {
+    await Overview.findOne({ name })
+      .then(post => {
+        return res.status(200).send(post);
+      })
+      .catch(err => {
+        logger.logError(err);
+        return res.status(500).send('Dataproxy went wrong when get post About');
+      });
+  } else if (item === 'Manuals') {
+    await Manual.findOne({ name })
+      .then(post => {
+        return res.status(200).send(post);
+      })
+      .catch(err => {
+        logger.logError(err);
+        return res.status(500).send('Dataproxy went wrong when get post Document');
+      });
+  } else {
+    return res.status(500).send('Dataproxy went wrong when get post');
   }
 });
 

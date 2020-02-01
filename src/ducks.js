@@ -11,6 +11,12 @@ import {
   REMOVE_POST_DOCUMENT_RESPONSE,
   UPDATE_POST_DOCUMENT_RESPONSE,
 } from './components/Admin/ducks';
+import {
+  GET_ALL_POST_ABOUT_NAVIGATION_RESPONSE,
+  GET_ALL_POST_DOCUMENT_NAVIGATION_RESPONSE,
+  GET_POST_RESPONSE,
+  VISIBLE_LOADING,
+} from './components/Home/ducks';
 
 export const UPDATE_FRAME_REQUEST = 'UPDATE_FRAME_REQUEST';
 export const UPDATE_FRAME_RESPONSE = 'UPDATE_FRAME_RESPONSE';
@@ -60,3 +66,38 @@ const postDocumentActionHandler = {
     state.filter(item => item._id !== action.payload.id),
 };
 export const postDocumentReducer = createReducer(postDocumentInit, postDocumentActionHandler);
+
+const listAboutNavigation = [];
+const postAboutNavigationActionHandler = {
+  [GET_ALL_POST_ABOUT_NAVIGATION_RESPONSE]: (state, action) => action.payload,
+};
+export const ListPostAboutNavigationReducer = createReducer(
+  listAboutNavigation,
+  postAboutNavigationActionHandler,
+);
+
+const listDocumentNavigation = [];
+const postDocumentNavigationActionHandler = {
+  [GET_ALL_POST_DOCUMENT_NAVIGATION_RESPONSE]: (state, action) => action.payload,
+};
+export const ListPostDocumentNavigationReducer = createReducer(
+  listDocumentNavigation,
+  postDocumentNavigationActionHandler,
+);
+
+const postInit = null;
+const postActionHandler = {
+  [GET_POST_RESPONSE]: (state, action) => action.payload,
+};
+export const PostReducer = createReducer(postInit, postActionHandler);
+
+const isVisibleLoading = false;
+const isVisibleLoadingActionHandler = {
+  [VISIBLE_LOADING]: state => {
+    return !state;
+  },
+};
+export const isVisibleLoadingReducer = createReducer(
+  isVisibleLoading,
+  isVisibleLoadingActionHandler,
+);
