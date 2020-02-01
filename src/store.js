@@ -5,6 +5,11 @@ import {
   modalReducer as modal,
   postAboutReducer as listAbout,
   postDocumentReducer as listDocument,
+  ListPostAboutNavigationReducer as ListPostAboutNavigation,
+  ListPostDocumentNavigationReducer as ListPostDocumentNavigation,
+  isVisibleLoadingReducer as isVisibleLoading,
+  PostReducer as post,
+  SearchPostsReducer as searchPosts,
 } from 'ducks';
 import { loginSaga, loginReducer as login } from './components/Login/ducks';
 import {
@@ -14,12 +19,18 @@ import {
   removePostSaga,
   updatePostSaga,
 } from './components/Admin/ducks';
+import { allPostNavigationSaga, postSaga, searchPostSaga } from './components/Home/ducks';
 
 export const rootReducer = combineReducers({
   login,
   modal,
   listAbout,
   listDocument,
+  ListPostAboutNavigation,
+  ListPostDocumentNavigation,
+  post,
+  isVisibleLoading,
+  searchPosts,
 });
 
 const rootSaga = function* rootSaga() {
@@ -30,6 +41,9 @@ const rootSaga = function* rootSaga() {
     ...removePostSaga,
     ...updatePostSaga,
     ...allPostSaga,
+    ...allPostNavigationSaga,
+    ...postSaga,
+    ...searchPostSaga,
   ]);
 };
 

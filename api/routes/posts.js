@@ -7,10 +7,10 @@ const logger = require('../utils/logger');
 
 postRouter.get('/', async (req, res) => {
   const page = req.query.item;
-  console.log(page);
 
   if (page === 'About') {
     await Overview.find({})
+      .sort({ _id: -1 })
       .then(posts => {
         return res.status(200).send(posts);
       })
@@ -20,6 +20,7 @@ postRouter.get('/', async (req, res) => {
       });
   } else if (page === 'Document') {
     await Manual.find({})
+      .sort({ _id: -1 })
       .then(posts => {
         return res.status(200).send(posts);
       })
@@ -29,6 +30,31 @@ postRouter.get('/', async (req, res) => {
       });
   } else {
     return res.status(500).send('Dataproxy went wrong when get all the posts');
+  }
+});
+
+postRouter.get('/post', async (req, res) => {
+  const { item, name } = req.query;
+  if (item === 'About') {
+    await Overview.findOne({ name })
+      .then(post => {
+        return res.status(200).send(post);
+      })
+      .catch(err => {
+        logger.logError(err);
+        return res.status(500).send('Dataproxy went wrong when get post About');
+      });
+  } else if (item === 'Manuals') {
+    await Manual.findOne({ name })
+      .then(post => {
+        return res.status(200).send(post);
+      })
+      .catch(err => {
+        logger.logError(err);
+        return res.status(500).send('Dataproxy went wrong when get post Document');
+      });
+  } else {
+    return res.status(500).send('Dataproxy went wrong when get post');
   }
 });
 
@@ -122,6 +148,51 @@ postRouter.post('/update', passport.authenticate('jwt', { session: false }), asy
         return res.status(500).send(err);
       });
   }
+});
+
+postRouter.get('/search', async (req, res) => {
+  const { name } = req.query;
+  const postsSearch = [];
+
+  function bodauTiengViet(str) {
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
+    str = str.replace(/đ/g, 'd');
+    str = str.replace(/ /g, '-');
+    return str;
+  }
+
+  await Overview.find({}, { name: 1, _id: 0 })
+    .then(posts => {
+      posts.map(post =>
+        bodauTiengViet(post.name.toLowerCase()).search(bodauTiengViet(name.toLowerCase())) > -1
+          ? postsSearch.push({ page: 'About', name: post.name })
+          : post,
+      );
+    })
+    .catch(err => {
+      logger.logError('find posts to search went wrong', err);
+      return res.sendStatus(500);
+    });
+
+  await Manual.find({})
+    .then(posts => {
+      posts.map(post =>
+        bodauTiengViet(post.name.toLowerCase()).search(bodauTiengViet(name.toLowerCase())) > -1
+          ? postsSearch.push({ page: 'Manuals', name: post.name })
+          : post,
+      );
+    })
+    .catch(err => {
+      logger.logError('find posts to search went wrong', err);
+      return res.sendStatus(500);
+    });
+  return res.status(200).send(postsSearch);
 });
 
 module.exports = postRouter;

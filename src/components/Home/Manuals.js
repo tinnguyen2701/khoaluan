@@ -72,7 +72,7 @@ const Div = styled.div`
     top: 42px;
 
     > li {
-      cursor: pointer;
+      }
     }
   }
 
@@ -81,7 +81,7 @@ const Div = styled.div`
   }
 `;
 
-const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
+const Manuals = ({ ListPostDocumentNavigation = [], dispatch, history }) => {
   const [keySearch, setKeySearch] = useState('');
   const onSearchHandler = () => {
     dispatch({ type: SEARCH_REQUEST, payload: keySearch });
@@ -108,7 +108,7 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
 
     dispatch({
       type: GET_ALL_POST_NAVIGATION_REQUEST,
-      payload: 'About',
+      payload: 'Document',
     });
   }, []);
 
@@ -116,10 +116,10 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
     <div>
       <Nav>
         <a href="/">MONGO-LEARN</a>
-        <button type="button" className="currentPage">
+        <button type="button" onClick={() => history.push('/')}>
           GETTING STARTED
         </button>
-        <button type="button" onClick={() => history.push('/Manuals')}>
+        <button type="button" onClick={() => history.push('/Manuals')} className="currentPage">
           MANUAL DOCUMENT
         </button>
         <span>
@@ -136,8 +136,8 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
       </Nav>
       <Div>
         <ListPostNavigation
-          ListPostNavigation={ListPostAboutNavigation}
-          page="About"
+          ListPostNavigation={ListPostDocumentNavigation}
+          page="Manuals"
           history={history}
         />
         <Post />
@@ -147,5 +147,5 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
 };
 
 export default connect(state => ({
-  ListPostAboutNavigation: state.ListPostAboutNavigation,
-}))(About);
+  ListPostDocumentNavigation: state.ListPostDocumentNavigation,
+}))(Manuals);

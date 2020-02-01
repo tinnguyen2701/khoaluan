@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import ListPostNavigation from './ListPostNavigation';
-import { GET_ALL_POST_NAVIGATION_REQUEST, SEARCH_REQUEST, GET_POST_REQUEST } from './ducks';
-import Post from './Post';
+import styled from 'styled-components';
+import { SEARCH_REQUEST } from './ducks';
 
 const Nav = styled.div`
   display: flex;
@@ -61,56 +59,39 @@ const Nav = styled.div`
   }
 `;
 const Div = styled.div`
-  display: flex;
-  > ul {
-    background: ghostwhite;
-    margin-top: 1px;
-    height: 95vh;
-    overflow-y: scroll;
-    position: fixed;
-    width: 25%;
-    top: 42px;
-
-    > li {
-      cursor: pointer;
-    }
+  padding-left: 20px;
+  padding-top: 50px;
+  button {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    margin: 25px 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 1px solid steelblue;
+    border-left: 1px solid steelblue;
+    width: 97%;
+    outline: none;
   }
-
-  > div {
-    margin-left: 25%;
+  img {
+    width: 64px;
+    height: 64px;
   }
 `;
 
-const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
+const searchPosts = ({ listSearch, isVisibleLoading, dispatch, history }) => {
   const [keySearch, setKeySearch] = useState('');
+
+  const onClickHandler = (name, page) => {
+    window.localStorage.setItem('navActiveColor', name);
+    history.push(`/${page}/${name}`);
+  };
+
   const onSearchHandler = () => {
     dispatch({ type: SEARCH_REQUEST, payload: keySearch });
     history.push('/List-Search');
   };
-
-  useEffect(() => {
-    window.localStorage.setItem('navActiveColor', null);
-
-    const partOfLink = window.location.href.split('/');
-    if (
-      partOfLink[partOfLink.length - 2] === 'About' ||
-      partOfLink[partOfLink.length - 2] === 'Manuals'
-    ) {
-      dispatch({
-        type: GET_POST_REQUEST,
-        payload: {
-          page: partOfLink[partOfLink.length - 2],
-          name: partOfLink[partOfLink.length - 1],
-        },
-      });
-      history.push(`/${partOfLink[partOfLink.length - 2]}/${partOfLink[partOfLink.length - 1]}`);
-    }
-
-    dispatch({
-      type: GET_ALL_POST_NAVIGATION_REQUEST,
-      payload: 'About',
-    });
-  }, []);
 
   return (
     <div>
@@ -135,17 +116,28 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
         </span>
       </Nav>
       <Div>
-        <ListPostNavigation
-          ListPostNavigation={ListPostAboutNavigation}
-          page="About"
-          history={history}
-        />
-        <Post />
+        Danh Sách Tìm kiếm:
+        {listSearch &&
+          listSearch.length > 0 &&
+          listSearch.map((item, index) => (
+            <div key={index.toString()}>
+              <button type="button" onClick={() => onClickHandler(item.name, item.page)}>
+                <img
+                  src="https://stackjava.com/wp-content/uploads/2018/07/mongodb-250x250.png"
+                  alt="post"
+                />
+                {item.name}
+              </button>
+            </div>
+          ))}
+        {isVisibleLoading && <p>Waitting...</p>}
+        {listSearch && listSearch.length === 0 && <p>Not Found Result!</p>}
       </Div>
     </div>
   );
 };
 
 export default connect(state => ({
-  ListPostAboutNavigation: state.ListPostAboutNavigation,
-}))(About);
+  listSearch: state.searchPosts,
+  isVisibleLoading: state.isVisibleLoading,
+}))(searchPosts);
