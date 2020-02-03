@@ -21,6 +21,12 @@ const Div = styled.div`
     border: none;
     margin-right: 10px;
   }
+
+  textarea {
+    width: 100%;
+    height: 150px;
+    margin-top: 20px;
+  }
 `;
 
 export default () => {
@@ -79,7 +85,7 @@ export default () => {
           onChange={e => setQuestion(e.target.value)}
           placeholder="question.."
         />
-        <input
+        <textarea
           type="text"
           value={answer}
           onChange={e => setAnswer(e.target.value)}

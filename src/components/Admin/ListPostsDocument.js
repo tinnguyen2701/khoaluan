@@ -51,14 +51,23 @@ const Div = styled.div`
     border: none;
   }
 
+  textarea {
+    width: 100%;
+    height: 150px;
+    margin-top: 20px;
+  }
+
   ${props => (props.isVisible ? 'display: flex;' : 'display: none;')}
 `;
 
-const List = ({ listDocument }) => {
+const List = ({ listDocument, dispatch }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [name, setName] = useState('');
   const [describe, setDescribe] = useState('');
   const [id, setId] = useState('');
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [visibleAddQuestion, setVisibleAddQuestion] = useState(false);
   const [homeWork, setHomeWork] = useState([]);
   const editor = useRef(null);
   const config = {
@@ -89,11 +98,23 @@ const List = ({ listDocument }) => {
     setDescribe('');
     setName('');
     setHomeWork([]);
+    setQuestion('');
+    setAnswer('');
     setIsVisible(!isVisible);
   };
 
   const deleteHomeWorkHandler = question => {
     setHomeWork([...homeWork.filter(item => item.question !== question)]);
+  };
+  const onAddQuestionHandler = () => {
+    setVisibleAddQuestion(true);
+  };
+
+  const onAddQuestionAnswerHandler = () => {
+    setHomeWork([...homeWork, { question, answer }]);
+    setVisibleAddQuestion(false);
+    setQuestion('');
+    setAnswer('');
   };
 
   return (
@@ -112,7 +133,35 @@ const List = ({ listDocument }) => {
             onBlur={newContent => setDescribe(newContent)}
             onChange={newContent => {}}
           />
-          <p>Danh sách các câu hỏi và trả lời</p>
+          <p>
+            Danh sách các câu hỏi và trả lời{' '}
+            <button type="button" onClick={() => onAddQuestionHandler()}>
+              Thêm
+            </button>
+          </p>
+          {visibleAddQuestion && (
+            <div>
+              <input
+                type="text"
+                value={question}
+                onChange={e => setQuestion(e.target.value)}
+                placeholder="question.."
+              />
+              <textarea
+                type="text"
+                value={answer}
+                onChange={e => setAnswer(e.target.value)}
+                style={{ marginBottom: '0' }}
+                placeholder="answer.."
+              />
+              <button type="button" onClick={() => onAddQuestionAnswerHandler()}>
+                Thêm
+              </button>
+              <button type="button" onClick={() => setVisibleAddQuestion(false)}>
+                Hủy
+              </button>
+            </div>
+          )}
           <div>
             {homeWork.map((item, index) => (
               <div>

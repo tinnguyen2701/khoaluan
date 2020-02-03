@@ -89,9 +89,12 @@ const Manuals = ({ ListPostDocumentNavigation = [], dispatch, history }) => {
   };
 
   useEffect(() => {
-    window.localStorage.setItem('navActiveColor', null);
-
     const partOfLink = window.location.href.split('/');
+    if (
+      partOfLink[partOfLink.length - 1] !== 'About' &&
+      partOfLink[partOfLink.length - 1] !== 'Manuals'
+    )
+      window.localStorage.setItem('navActiveColor', null);
     if (
       partOfLink[partOfLink.length - 2] === 'About' ||
       partOfLink[partOfLink.length - 2] === 'Manuals'
@@ -116,7 +119,7 @@ const Manuals = ({ ListPostDocumentNavigation = [], dispatch, history }) => {
     <div>
       <Nav>
         <a href="/">MONGO-LEARN</a>
-        <button type="button" onClick={() => history.push('/')}>
+        <button type="button" onClick={() => history.push('/About')}>
           GETTING STARTED
         </button>
         <button type="button" onClick={() => history.push('/Manuals')} className="currentPage">

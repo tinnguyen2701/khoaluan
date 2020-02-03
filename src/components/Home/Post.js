@@ -1,14 +1,26 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 const Div = styled.div`
   padding-left: 40px;
   padding-top: 60px;
-  padding-bottom: 20px;
+  padding-bottom: 60px;
   padding-right: 20px;
   opacity: ${props => (props.isVisibleLoading ? '0.2' : '1')};
+
+  .your-answer,
+  .answer {
+    width: 100%;
+    height: 150px;
+  }
+
+  .button-test {
+    margin: 10px 10px 10px 0;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 5px;
+  }
 `;
 
 const DefaultContent = styled.div`
@@ -18,25 +30,108 @@ const DefaultContent = styled.div`
   padding-right: 20px;
 `;
 
-const Post = ({ post, isVisibleLoading }) => {
+const Favorite = styled.div`
+  width: 100%;
+  background: ghostwhite;
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+  padding: 10px 0;
+
+  button {
+    padding: 3px 15px;
+    font-size: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    :hover i {
+      color: steelblue;
+    }
+  }
+`;
+
+const Post = ({ post, isVisibleLoading, dispatch }) => {
+  const [visibleTest, setVisibleTest] = useState(false);
+  const [visibleResult, setVisibleResult] = useState(false);
+  const [answer, setAnswer] = useState('');
+  const [yourAnswer, setYourAnswer] = useState('');
+
+  const onTestHandler = answer => {
+    setVisibleTest(true);
+    setAnswer(answer);
+    setVisibleResult(false);
+  };
+
+  const checkAnswerHandler = () => {
+    setVisibleResult(true);
+  };
+
+  const closeHandler = () => {
+    setVisibleTest(false);
+    setVisibleResult(false);
+    setYourAnswer('');
+  };
+
+  const LikePostHandler = () => {};
+
   return (
     <div>
       {post && (
         <Div isVisibleLoading={isVisibleLoading}>
           <p style={{ color: 'steelblue', fontSize: '30px' }}>{post.name}</p>
+          <p style={{ color: 'steelblue', fontSize: '14px', marginBottom: '20px' }}>
+            {new Date(post.updated_at).toLocaleString()}
+          </p>
           <div className="Container" dangerouslySetInnerHTML={{ __html: post.describe }}></div>
           {post.homeWork && (
             <div style={{ marginTop: '20px' }}>
               <p style={{ fontSize: '24px' }}>Home Work</p>
               {post.homeWork.map((item, index) => (
-                <div key={index.toString()}>{item.question}</div>
+                <div key={index.toString()}>
+                  {index + 1}. {item.question}{' '}
+                  <button
+                    className="button-test"
+                    type="button"
+                    onClick={() => onTestHandler(item.answer)}
+                  >
+                    Test your answer
+                  </button>
+                </div>
               ))}
             </div>
           )}
+          {visibleTest && (
+            <div>
+              <p style={{ fontSize: '24px' }}>Test Code</p>
+              <textarea
+                className="your-answer"
+                value={yourAnswer}
+                onChange={e => setYourAnswer(e.target.value)}
+              />
+              <button className="button-test" type="button" onClick={() => checkAnswerHandler()}>
+                Check Answer
+              </button>
+              <button className="button-test" type="button" onClick={() => closeHandler()}>
+                Close
+              </button>
+              {visibleResult && <textarea className="answer" readOnly value={answer} />}
+            </div>
+          )}
+          <Favorite>
+            <span>
+              <button type="button" onClick={() => LikePostHandler()}>
+                <i className="fa fa-thumbs-o-up" />
+              </button>
+            </span>
+            <span>{1} person like this post</span>
+          </Favorite>
         </Div>
       )}
       {window.location.href.split('/')[window.location.href.split('/').length - 2] != 'About' &&
-        window.location.href.split('/')[window.location.href.split('/').length - 2] !=
+        window.location.href.split('/')[window.location.href.split('/').length - 2] != 'Manuals' &&
+        window.location.href.split('/')[window.location.href.split('/').length - 1] != 'About' &&
+        window.location.href.split('/')[window.location.href.split('/').length - 1] !=
           'Manuals' && (
           <DefaultContent>
             <img

@@ -17,6 +17,7 @@ export default () => {
           <Route path="/login" component={Login} />
           <Route path="/manuals" component={Manuals} />
           <Route path="/Manuals/:name" component={Manuals} />
+          <Route path="/About" component={Home} />
           <Route path="/About/:name" component={Home} />
           <Route path="/List-Search" component={ListSearch} />
         </Router>
