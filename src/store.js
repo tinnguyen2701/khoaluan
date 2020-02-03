@@ -10,6 +10,8 @@ import {
   isVisibleLoadingReducer as isVisibleLoading,
   PostReducer as post,
   SearchPostsReducer as searchPosts,
+  currentUserReducer as currentUser,
+  visibleModalReducer as visibleModal,
 } from 'ducks';
 import { loginSaga, loginReducer as login } from './components/Login/ducks';
 import {
@@ -19,7 +21,13 @@ import {
   removePostSaga,
   updatePostSaga,
 } from './components/Admin/ducks';
-import { allPostNavigationSaga, postSaga, searchPostSaga } from './components/Home/ducks';
+import {
+  allPostNavigationSaga,
+  postSaga,
+  searchPostSaga,
+  registerUserSaga,
+  LoginUserSaga,
+} from './components/Home/ducks';
 
 export const rootReducer = combineReducers({
   login,
@@ -31,6 +39,8 @@ export const rootReducer = combineReducers({
   post,
   isVisibleLoading,
   searchPosts,
+  currentUser,
+  visibleModal,
 });
 
 const rootSaga = function* rootSaga() {
@@ -44,6 +54,8 @@ const rootSaga = function* rootSaga() {
     ...allPostNavigationSaga,
     ...postSaga,
     ...searchPostSaga,
+    ...registerUserSaga,
+    ...LoginUserSaga,
   ]);
 };
 

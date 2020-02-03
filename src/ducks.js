@@ -1,5 +1,4 @@
-/* eslint no-underscore-dangle: "off" */
-/* eslint no-param-reassign: "error" */
+/*eslint-disable */
 import { createReducer } from 'dorothy/utils';
 import {
   GET_ALL_POST_ABOUT_RESPONSE,
@@ -17,6 +16,8 @@ import {
   GET_POST_RESPONSE,
   VISIBLE_LOADING,
   SEARCH_RESPONSE,
+  REGISTER_RESPONSE,
+  LOGIN_USER_RESPONSE,
 } from './components/Home/ducks';
 
 export const UPDATE_FRAME_REQUEST = 'UPDATE_FRAME_REQUEST';
@@ -110,3 +111,19 @@ const searchPostsActionHandler = {
   },
 };
 export const SearchPostsReducer = createReducer(searchPosts, searchPostsActionHandler);
+
+export const SIGN_OUT_USER = 'SIGN_OUT_USER';
+const currentUserInit = null;
+const currentUserActionHandler = {
+  [REGISTER_RESPONSE]: (state, action) => action.payload,
+  [LOGIN_USER_RESPONSE]: (state, action) => action.payload,
+  [SIGN_OUT_USER]: () => null,
+};
+export const currentUserReducer = createReducer(currentUserInit, currentUserActionHandler);
+
+export const VISIBLE_MODAL = 'VISIBLE_MODAL';
+const visibleModalInit = false;
+const visibleModalActionHandler = {
+  [VISIBLE_MODAL]: state => !state,
+};
+export const visibleModalReducer = createReducer(visibleModalInit, visibleModalActionHandler);

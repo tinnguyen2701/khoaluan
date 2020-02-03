@@ -1,5 +1,7 @@
+/* eslint-disable */
 import { fork, put, call, takeLatest } from 'redux-saga/effects';
 import { callApi, createAction, logger } from 'dorothy/utils';
+import { VISIBLE_MODAL } from '../../ducks';
 
 export const GET_ALL_POST_NAVIGATION_REQUEST = 'GET_ALL_POST_NAVIGATION_REQUEST';
 export const GET_ALL_POST_ABOUT_NAVIGATION_RESPONSE = 'GET_ALL_POST_ABOUT_NAVIGATION_RESPONSE';
@@ -17,6 +19,14 @@ export const VISIBLE_LOADING = 'VISIBLE_LOADING';
 export const SEARCH_REQUEST = 'SEARCH_REQUEST';
 export const SEARCH_RESPONSE = 'SEARCH_RESPONSE';
 export const SEARCH_ERROR = 'SEARCH_ERROR';
+
+export const REGISTER_REQUEST = 'REGISTER_REQUEST';
+export const REGISTER_RESPONSE = 'REGISTER_RESPONSE';
+export const REGISTER_ERROR = 'REGISTER_ERROR';
+
+export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST';
+export const LOGIN_USER_RESPONSE = 'LOGIN_USER_RESPONSE';
+export const LOGIN_USER_ERROR = 'LOGIN_USER_ERROR';
 
 /* all post navigation */
 function* requestGetAllPostNavigation(action) {
@@ -88,3 +98,48 @@ function* watchSearchPostRequest() {
   yield takeLatest(SEARCH_REQUEST, requestSearchPost);
 }
 export const searchPostSaga = [fork(watchSearchPostRequest)];
+
+/* register user */
+function* requestRegisterUser(action) {
+  try {
+    const response = yield call(
+      callApi,
+      'POST',
+      `${process.env.REACT_APP_MAIN_URL}api/users/register`,
+      action.payload,
+    );
+    if (response.status === 200) {
+      yield put(createAction(REGISTER_RESPONSE, response.data));
+      yield put(createAction(VISIBLE_MODAL));
+    }
+  } catch (error) {
+    logger.logError('khong the register user');
+  }
+}
+function* watchRegisterUserRequest() {
+  yield takeLatest(REGISTER_REQUEST, requestRegisterUser);
+}
+export const registerUserSaga = [fork(watchRegisterUserRequest)];
+
+/* login user */
+function* requestLoginUser(action) {
+  try {
+    const response = yield call(
+      callApi,
+      'POST',
+      `${process.env.REACT_APP_MAIN_URL}api/users/login`,
+      action.payload,
+    );
+    if (response.status === 200) {
+      yield put(createAction(LOGIN_USER_RESPONSE, response.data));
+      window.localStorage.setItem('username', response.data.username);
+      yield put(createAction(VISIBLE_MODAL));
+    }
+  } catch (error) {
+    logger.logError('khong the Login user');
+  }
+}
+function* watchLoginUserRequest() {
+  yield takeLatest(LOGIN_USER_REQUEST, requestLoginUser);
+}
+export const LoginUserSaga = [fork(watchLoginUserRequest)];

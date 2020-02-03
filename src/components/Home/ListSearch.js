@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { SEARCH_REQUEST } from './ducks';
+import { VISIBLE_MODAL, SIGN_OUT_USER } from '../../ducks';
 
 const Nav = styled.div`
   display: flex;
@@ -56,6 +57,12 @@ const Nav = styled.div`
       padding: 5px;
       color: steelblue;
     }
+
+    .button-avatar {
+      font-size: 17px;
+      border: 0;
+      border-radius: 8px;
+    }
   }
 `;
 const Div = styled.div`
@@ -80,7 +87,7 @@ const Div = styled.div`
   }
 `;
 
-const searchPosts = ({ listSearch, isVisibleLoading, dispatch, history }) => {
+const searchPosts = ({ listSearch, isVisibleLoading, currentUser, dispatch, history }) => {
   const [keySearch, setKeySearch] = useState('');
 
   const onClickHandler = (name, page) => {
@@ -91,6 +98,15 @@ const searchPosts = ({ listSearch, isVisibleLoading, dispatch, history }) => {
   const onSearchHandler = () => {
     dispatch({ type: SEARCH_REQUEST, payload: keySearch });
     history.push('/List-Search');
+  };
+
+  const onLoginHandler = () => {
+    dispatch({ type: VISIBLE_MODAL });
+  };
+
+  const onSignOutHandler = () => {
+    window.localStorage.removeItem('username');
+    dispatch({ type: SIGN_OUT_USER });
   };
 
   return (
@@ -114,6 +130,26 @@ const searchPosts = ({ listSearch, isVisibleLoading, dispatch, history }) => {
             <i className="fa fa-search" aria-hidden="true" />
           </button>
         </span>
+        <span>
+          {currentUser ? (
+            <span>
+              <button type="button" className="button-avatar" onClick={() => onLoginHandler()}>
+                <i className="far fa-smile" /> {currentUser.username}
+              </button>
+            </span>
+          ) : (
+            <button type="button" onClick={() => onLoginHandler()}>
+              LOGIN
+            </button>
+          )}
+        </span>
+        {currentUser && (
+          <span>
+            <button type="button" className="button-avatar" onClick={() => onSignOutHandler()}>
+              Sign out
+            </button>
+          </span>
+        )}
       </Nav>
       <Div>
         Danh Sách Tìm kiếm:
@@ -140,4 +176,5 @@ const searchPosts = ({ listSearch, isVisibleLoading, dispatch, history }) => {
 export default connect(state => ({
   listSearch: state.searchPosts,
   isVisibleLoading: state.isVisibleLoading,
+  currentUser: state.currentUser,
 }))(searchPosts);

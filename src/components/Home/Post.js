@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
+import { REGISTER_REQUEST, LOGIN_REQUEST, LOGIN_USER_REQUEST } from './ducks';
+import { VISIBLE_MODAL } from '../../ducks';
 
 const Div = styled.div`
   padding-left: 40px;
@@ -51,11 +53,61 @@ const Favorite = styled.div`
   }
 `;
 
-const Post = ({ post, isVisibleLoading, dispatch }) => {
+const Register = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 99;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .button-close {
+    position: absolute;
+    top: 17%;
+    right: 5%;
+    font-size: 31px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    margin: 200px;
+    span {
+      color: white;
+      margin: 10px 0;
+    }
+    input {
+      padding: 5px;
+      width: 140%;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      margin-top: 40px;
+      width: 100px;
+      padding: 5px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  }
+`;
+
+const Post = ({ post, isVisibleLoading, visibleModal, currentUser, dispatch }) => {
   const [visibleTest, setVisibleTest] = useState(false);
   const [visibleResult, setVisibleResult] = useState(false);
   const [answer, setAnswer] = useState('');
   const [yourAnswer, setYourAnswer] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const onTestHandler = answer => {
     setVisibleTest(true);
@@ -73,7 +125,29 @@ const Post = ({ post, isVisibleLoading, dispatch }) => {
     setYourAnswer('');
   };
 
-  const LikePostHandler = () => {};
+  const LikePostHandler = () => {
+    console.log(currentUser);
+
+    if (currentUser == null) {
+      dispatch({ type: VISIBLE_MODAL });
+    }
+  };
+
+  const onRegister = e => {
+    e.preventDefault();
+    dispatch({ type: REGISTER_REQUEST, payload: { username, password } });
+  };
+
+  const onLogin = e => {
+    e.preventDefault();
+    dispatch({ type: LOGIN_USER_REQUEST, payload: { username, password } });
+  };
+
+  const closeVisibleRegisterHandler = () => {
+    dispatch({ type: VISIBLE_MODAL });
+    setUsername('');
+    setPassword('');
+  };
 
   return (
     <div>
@@ -183,6 +257,37 @@ const Post = ({ post, isVisibleLoading, dispatch }) => {
       {(window.location.href.split('/')[window.location.href.split('/').length - 2] == 'About' ||
         window.location.href.split('/')[window.location.href.split('/').length - 2] == 'Manuals') &&
         post == null && <DefaultContent>Waitting..</DefaultContent>}
+      {visibleModal && (
+        <Register>
+          <div>
+            <form onSubmit={e => onRegister(e)}>
+              <p style={{ color: 'steelblue', fontSize: '35px' }}>R E G I S T E R</p>
+              <span>Username</span>
+              <input value={username} onChange={e => setUsername(e.target.value)} />
+              <span>Password</span>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+              <button type="submit">Register</button>
+            </form>
+          </div>
+          <div>
+            <form onSubmit={e => onLogin(e)}>
+              <p style={{ color: 'steelblue', fontSize: '35px' }}>L O G I N</p>
+              <span>Username</span>
+              <input value={username} onChange={e => setUsername(e.target.value)} />
+              <span>Password</span>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+              <button type="submit">Login</button>
+            </form>
+          </div>
+          <button
+            className="button-close"
+            type="button"
+            onClick={() => closeVisibleRegisterHandler()}
+          >
+            X
+          </button>
+        </Register>
+      )}
     </div>
   );
 };
@@ -190,4 +295,6 @@ const Post = ({ post, isVisibleLoading, dispatch }) => {
 export default connect(state => ({
   post: state.post,
   isVisibleLoading: state.isVisibleLoading,
+  visibleModal: state.visibleModal,
+  currentUser: state.currentUser,
 }))(Post);

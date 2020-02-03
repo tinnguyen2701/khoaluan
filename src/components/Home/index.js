@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import ListPostNavigation from './ListPostNavigation';
 import { GET_ALL_POST_NAVIGATION_REQUEST, SEARCH_REQUEST, GET_POST_REQUEST } from './ducks';
 import Post from './Post';
+import { VISIBLE_MODAL, SIGN_OUT_USER } from '../../ducks';
 
 const Nav = styled.div`
   display: flex;
@@ -58,6 +59,12 @@ const Nav = styled.div`
       padding: 5px;
       color: steelblue;
     }
+
+    .button-avatar {
+      font-size: 17px;
+      border: 0;
+      border-radius: 8px;
+    }
   }
 `;
 const Div = styled.div`
@@ -81,7 +88,7 @@ const Div = styled.div`
   }
 `;
 
-const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
+const About = ({ ListPostAboutNavigation = [], currentUser, dispatch, history }) => {
   const [keySearch, setKeySearch] = useState('');
   const onSearchHandler = () => {
     dispatch({ type: SEARCH_REQUEST, payload: keySearch });
@@ -116,6 +123,15 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
     });
   }, []);
 
+  const onLoginHandler = () => {
+    dispatch({ type: VISIBLE_MODAL });
+  };
+
+  const onSignOutHandler = () => {
+    window.localStorage.removeItem('username');
+    dispatch({ type: SIGN_OUT_USER });
+  };
+
   return (
     <div>
       <Nav>
@@ -137,6 +153,26 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
             <i className="fa fa-search" aria-hidden="true" />
           </button>
         </span>
+        <span>
+          {currentUser ? (
+            <span>
+              <button type="button" className="button-avatar" onClick={() => onLoginHandler()}>
+                <i className="far fa-smile" /> {currentUser.username}
+              </button>
+            </span>
+          ) : (
+            <button type="button" onClick={() => onLoginHandler()}>
+              LOGIN
+            </button>
+          )}
+        </span>
+        {currentUser && (
+          <span>
+            <button type="button" className="button-avatar" onClick={() => onSignOutHandler()}>
+              Sign out
+            </button>
+          </span>
+        )}
       </Nav>
       <Div>
         <ListPostNavigation
@@ -152,4 +188,5 @@ const About = ({ ListPostAboutNavigation = [], dispatch, history }) => {
 
 export default connect(state => ({
   ListPostAboutNavigation: state.ListPostAboutNavigation,
+  currentUser: state.currentUser,
 }))(About);

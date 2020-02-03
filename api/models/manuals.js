@@ -20,6 +20,21 @@ const manualSchema = new Schema({
       },
     },
   ],
+  favorites: Array,
+  comments: [
+    {
+      name: {
+        type: String,
+      },
+      comment: {
+        type: String,
+      },
+      updated_at: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
   updated_at: {
     type: Date,
     default: Date.now,
