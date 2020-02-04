@@ -62,6 +62,7 @@ const Nav = styled.div`
       font-size: 17px;
       border: 0;
       border-radius: 8px;
+      margin-right: 5px;
     }
   }
 `;
@@ -134,7 +135,7 @@ const searchPosts = ({ listSearch, isVisibleLoading, currentUser, dispatch, hist
           {currentUser ? (
             <span>
               <button type="button" className="button-avatar" onClick={() => onLoginHandler()}>
-                <i className="far fa-smile" /> {currentUser.username}
+                <i className="fa fa-envira" /> {currentUser.username}
               </button>
             </span>
           ) : (
@@ -142,14 +143,14 @@ const searchPosts = ({ listSearch, isVisibleLoading, currentUser, dispatch, hist
               LOGIN
             </button>
           )}
+          {currentUser && (
+            <span>
+              <button type="button" className="button-avatar" onClick={() => onSignOutHandler()}>
+                Sign out
+              </button>
+            </span>
+          )}
         </span>
-        {currentUser && (
-          <span>
-            <button type="button" className="button-avatar" onClick={() => onSignOutHandler()}>
-              Sign out
-            </button>
-          </span>
-        )}
       </Nav>
       <Div>
         Danh Sách Tìm kiếm:

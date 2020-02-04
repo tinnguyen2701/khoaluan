@@ -65,6 +65,7 @@ const Nav = styled.div`
     font-size: 17px;
     border: 0;
     border-radius: 8px;
+    margin-right: 5px;
   }
 `;
 const Div = styled.div`
@@ -156,7 +157,7 @@ const Manuals = ({ ListPostDocumentNavigation = [], currentUser, dispatch, histo
           {currentUser ? (
             <span>
               <button type="button" className="button-avatar" onClick={() => onLoginHandler()}>
-                <i className="far fa-smile" /> {currentUser.username}
+                <i className="fa fa-envira" /> {currentUser.username}
               </button>
             </span>
           ) : (
@@ -164,14 +165,14 @@ const Manuals = ({ ListPostDocumentNavigation = [], currentUser, dispatch, histo
               LOGIN
             </button>
           )}
+          {currentUser && (
+            <span>
+              <button type="button" className="button-avatar" onClick={() => onSignOutHandler()}>
+                Sign out
+              </button>
+            </span>
+          )}
         </span>
-        {currentUser && (
-          <span>
-            <button type="button" className="button-avatar" onClick={() => onSignOutHandler()}>
-              Sign out
-            </button>
-          </span>
-        )}
       </Nav>
       <Div>
         <ListPostNavigation

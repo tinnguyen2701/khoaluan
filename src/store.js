@@ -27,6 +27,10 @@ import {
   searchPostSaga,
   registerUserSaga,
   LoginUserSaga,
+  likePostSaga,
+  unLikePostSaga,
+  addCommentPostSaga,
+  deleteCommentPostSaga,
 } from './components/Home/ducks';
 
 export const rootReducer = combineReducers({
@@ -56,6 +60,10 @@ const rootSaga = function* rootSaga() {
     ...searchPostSaga,
     ...registerUserSaga,
     ...LoginUserSaga,
+    ...likePostSaga,
+    ...unLikePostSaga,
+    ...addCommentPostSaga,
+    ...deleteCommentPostSaga,
   ]);
 };
 

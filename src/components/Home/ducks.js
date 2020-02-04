@@ -28,6 +28,22 @@ export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST';
 export const LOGIN_USER_RESPONSE = 'LOGIN_USER_RESPONSE';
 export const LOGIN_USER_ERROR = 'LOGIN_USER_ERROR';
 
+export const LIKE_POST_USER_REQUEST = 'LIKE_POST_USER_REQUEST';
+export const LIKE_POST_USER_RESPONSE = 'LIKE_POST_USER_RESPONSE';
+export const LIKE_POST_USER_ERROR = 'LIKE_POST_USER_ERROR';
+
+export const UN_LIKE_POST_USER_REQUEST = 'UN_LIKE_POST_USER_REQUEST';
+export const UN_LIKE_POST_USER_RESPONSE = 'UN_LIKE_POST_USER_RESPONSE';
+export const UN_LIKE_POST_USER_ERROR = 'UN_LIKE_POST_USER_ERROR';
+
+export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
+export const ADD_COMMENT_RESPONSE = 'ADD_COMMENT_RESPONSE';
+export const ADD_COMMENT_ERROR = 'ADD_COMMENT_ERROR';
+
+export const DELETE_COMMENT_REQUEST = 'DELETE_COMMENT_REQUEST';
+export const DELETE_COMMENT_RESPONSE = 'DELETE_COMMENT_RESPONSE';
+export const DELETE_COMMENT_ERROR = 'DELETE_COMMENT_ERROR';
+
 /* all post navigation */
 function* requestGetAllPostNavigation(action) {
   try {
@@ -143,3 +159,87 @@ function* watchLoginUserRequest() {
   yield takeLatest(LOGIN_USER_REQUEST, requestLoginUser);
 }
 export const LoginUserSaga = [fork(watchLoginUserRequest)];
+
+/* like post */
+function* requestLikePost(action) {
+  try {
+    const response = yield call(
+      callApi,
+      'POST',
+      `${process.env.REACT_APP_MAIN_URL}api/users/like`,
+      action.payload,
+    );
+    if (response.status === 200) {
+      yield put(createAction(LIKE_POST_USER_RESPONSE, response.data));
+    }
+  } catch (error) {
+    logger.logError('khong the like post');
+  }
+}
+function* watchLikePostRequest() {
+  yield takeLatest(LIKE_POST_USER_REQUEST, requestLikePost);
+}
+export const likePostSaga = [fork(watchLikePostRequest)];
+
+/* un like post */
+function* requestUnLikePost(action) {
+  try {
+    const response = yield call(
+      callApi,
+      'POST',
+      `${process.env.REACT_APP_MAIN_URL}api/users/unlike`,
+      action.payload,
+    );
+    if (response.status === 200) {
+      yield put(createAction(UN_LIKE_POST_USER_RESPONSE, response.data));
+    }
+  } catch (error) {
+    logger.logError('khong the un like post');
+  }
+}
+function* watchUnLikePostRequest() {
+  yield takeLatest(UN_LIKE_POST_USER_REQUEST, requestUnLikePost);
+}
+export const unLikePostSaga = [fork(watchUnLikePostRequest)];
+
+/* add comment post */
+function* requestAddCommentPost(action) {
+  try {
+    const response = yield call(
+      callApi,
+      'POST',
+      `${process.env.REACT_APP_MAIN_URL}api/users/addComment`,
+      action.payload,
+    );
+    if (response.status === 200) {
+      yield put(createAction(ADD_COMMENT_RESPONSE, response.data));
+    }
+  } catch (error) {
+    logger.logError('khong the add comment');
+  }
+}
+function* watchAddCommentPostRequest() {
+  yield takeLatest(ADD_COMMENT_REQUEST, requestAddCommentPost);
+}
+export const addCommentPostSaga = [fork(watchAddCommentPostRequest)];
+
+/* delete comment post */
+function* requestDeleteCommentPost(action) {
+  try {
+    const response = yield call(
+      callApi,
+      'POST',
+      `${process.env.REACT_APP_MAIN_URL}api/users/deleteComment`,
+      action.payload,
+    );
+    if (response.status === 200) {
+      yield put(createAction(DELETE_COMMENT_RESPONSE, response.data));
+    }
+  } catch (error) {
+    logger.logError('khong the delete comment');
+  }
+}
+function* watchDeleteCommentPostRequest() {
+  yield takeLatest(DELETE_COMMENT_REQUEST, requestDeleteCommentPost);
+}
+export const deleteCommentPostSaga = [fork(watchDeleteCommentPostRequest)];

@@ -13,7 +13,7 @@ const overviewSchema = new Schema({
   favorites: Array,
   comments: [
     {
-      name: {
+      username: {
         type: String,
       },
       comment: {

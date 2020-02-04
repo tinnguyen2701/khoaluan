@@ -18,6 +18,10 @@ import {
   SEARCH_RESPONSE,
   REGISTER_RESPONSE,
   LOGIN_USER_RESPONSE,
+  LIKE_POST_USER_RESPONSE,
+  UN_LIKE_POST_USER_RESPONSE,
+  ADD_COMMENT_RESPONSE,
+  DELETE_COMMENT_RESPONSE,
 } from './components/Home/ducks';
 
 export const UPDATE_FRAME_REQUEST = 'UPDATE_FRAME_REQUEST';
@@ -90,6 +94,18 @@ export const ListPostDocumentNavigationReducer = createReducer(
 const postInit = null;
 const postActionHandler = {
   [GET_POST_RESPONSE]: (state, action) => action.payload,
+  [LIKE_POST_USER_RESPONSE]: (state, action) => {
+    return { ...state, favorites: action.payload };
+  },
+  [UN_LIKE_POST_USER_RESPONSE]: (state, action) => {
+    return { ...state, favorites: action.payload };
+  },
+  [ADD_COMMENT_RESPONSE]: (state, action) => {
+    return { ...state, comments: action.payload };
+  },
+  [DELETE_COMMENT_RESPONSE]: (state, action) => {
+    return { ...state, comments: action.payload };
+  },
 };
 export const PostReducer = createReducer(postInit, postActionHandler);
 

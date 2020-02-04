@@ -2,7 +2,15 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { REGISTER_REQUEST, LOGIN_REQUEST, LOGIN_USER_REQUEST } from './ducks';
+import {
+  REGISTER_REQUEST,
+  LOGIN_REQUEST,
+  LOGIN_USER_REQUEST,
+  LIKE_POST_USER_REQUEST,
+  UN_LIKE_POST_USER_REQUEST,
+  ADD_COMMENT_REQUEST,
+  DELETE_COMMENT_REQUEST,
+} from './ducks';
 import { VISIBLE_MODAL } from '../../ducks';
 
 const Div = styled.div`
@@ -16,6 +24,7 @@ const Div = styled.div`
   .answer {
     width: 100%;
     height: 150px;
+    padding: 10px;
   }
 
   .button-test {
@@ -50,7 +59,14 @@ const Favorite = styled.div`
     :hover i {
       color: steelblue;
     }
+    .fa-thumbs-o-up {
+    }
   }
+`;
+
+const FavoriteIcon = styled.i`
+  color: ${props => (props.favorited ? 'steelblue' : 'black')};
+}
 `;
 
 const Register = styled.div`
@@ -101,6 +117,68 @@ const Register = styled.div`
   }
 `;
 
+const Comment = styled.div`
+  textarea {
+    width: 100%;
+    margin-top: 20px;
+    height: 100px;
+    font-size: 16px;
+    padding: 10px;
+    outline: none;
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+  button {
+    background: ghostwhite;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+`;
+
+const ListComment = styled.div`
+  margin-top: 20px;
+
+  > div {
+    margin-top: 15px;
+  }
+
+  p {
+    white-space: pre-line;
+    padding-left: 15px;
+    background: ghostwhite;
+    border-radius: 5px;
+    position: relative;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  i {
+    font-size: 25px;
+    color: steelblue;
+  }
+
+  .span-name {
+    font-size: 25px;
+    color: steelblue;
+  }
+
+  .span-time {
+    float: right;
+    color: darkgray;
+  }
+
+  .delete-comment {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+    color: indianred;
+    padding: 0;
+    margin: 0;
+  }
+`;
+
 const Post = ({ post, isVisibleLoading, visibleModal, currentUser, dispatch }) => {
   const [visibleTest, setVisibleTest] = useState(false);
   const [visibleResult, setVisibleResult] = useState(false);
@@ -108,6 +186,7 @@ const Post = ({ post, isVisibleLoading, visibleModal, currentUser, dispatch }) =
   const [yourAnswer, setYourAnswer] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [comment, setComment] = useState('');
 
   const onTestHandler = answer => {
     setVisibleTest(true);
@@ -125,12 +204,57 @@ const Post = ({ post, isVisibleLoading, visibleModal, currentUser, dispatch }) =
     setYourAnswer('');
   };
 
-  const LikePostHandler = () => {
-    console.log(currentUser);
-
+  const LikePostHandler = id => {
     if (currentUser == null) {
       dispatch({ type: VISIBLE_MODAL });
+    } else {
+      if (post.favorites.indexOf(currentUser.username) > -1) {
+        dispatch({
+          type: UN_LIKE_POST_USER_REQUEST,
+          payload: {
+            id,
+            username: currentUser.username,
+            item: window.location.href.split('/')[window.location.href.split('/').length - 2],
+          },
+        });
+      } else
+        dispatch({
+          type: LIKE_POST_USER_REQUEST,
+          payload: {
+            id,
+            username: currentUser.username,
+            item: window.location.href.split('/')[window.location.href.split('/').length - 2],
+          },
+        });
     }
+  };
+  const onAddCommentHandler = (e, id) => {
+    e.preventDefault();
+    if (currentUser == null) {
+      dispatch({ type: VISIBLE_MODAL });
+    } else {
+      dispatch({
+        type: ADD_COMMENT_REQUEST,
+        payload: {
+          id,
+          username: currentUser.username,
+          comment,
+          item: window.location.href.split('/')[window.location.href.split('/').length - 2],
+        },
+      });
+      setComment('');
+    }
+  };
+
+  const deleteCommentHandler = (postId, commentId) => {
+    dispatch({
+      type: DELETE_COMMENT_REQUEST,
+      payload: {
+        postId,
+        commentId,
+        item: window.location.href.split('/')[window.location.href.split('/').length - 2],
+      },
+    });
   };
 
   const onRegister = e => {
@@ -194,12 +318,66 @@ const Post = ({ post, isVisibleLoading, visibleModal, currentUser, dispatch }) =
           )}
           <Favorite>
             <span>
-              <button type="button" onClick={() => LikePostHandler()}>
-                <i className="fa fa-thumbs-o-up" />
+              <button type="button" onClick={() => LikePostHandler(post._id)}>
+                <FavoriteIcon
+                  className="fa fa-thumbs-o-up"
+                  favorited={currentUser && post.favorites.indexOf(currentUser.username) > -1}
+                />
               </button>
             </span>
-            <span>{1} person like this post</span>
+            <span>
+              {currentUser && post.favorites.indexOf(currentUser.username) > -1 && (
+                <span>Your liked and </span>
+              )}
+              {currentUser && post.favorites.indexOf(currentUser.username) > -1 && (
+                <span>{post.favorites.length - 1} </span>
+              )}
+              {currentUser && post.favorites.indexOf(currentUser.username) < 0 && (
+                <span>{post.favorites.length} </span>
+              )}
+              {currentUser == null && <span>{post.favorites.length} </span>}
+              {post.favorites.length > 1 ? (
+                <span>another persons </span>
+              ) : (
+                <span>person </span>
+              )}{' '}
+              like this post
+            </span>
           </Favorite>
+          <Comment>
+            <form onSubmit={e => onAddCommentHandler(e, post._id)}>
+              <textarea
+                value={comment}
+                placeholder="add comment.."
+                onChange={e => setComment(e.target.value)}
+              />
+              <button type="submit">Comment</button>
+            </form>
+            <ListComment>
+              {post.comments.length > 0 &&
+                post.comments.map((comment, index) => (
+                  <div key={index.toString()}>
+                    <i className="fa fa-envira" />
+                    <span className="span-name">{comment.username}</span>
+                    <span className="span-time">
+                      {new Date(comment.updated_at).toLocaleString()}
+                    </span>
+                    <p>
+                      {comment.comment}
+                      {currentUser != null && currentUser.username == comment.username && (
+                        <button
+                          className="delete-comment"
+                          type="button"
+                          onClick={() => deleteCommentHandler(post._id, comment._id)}
+                        >
+                          X
+                        </button>
+                      )}
+                    </p>
+                  </div>
+                ))}
+            </ListComment>
+          </Comment>
         </Div>
       )}
       {window.location.href.split('/')[window.location.href.split('/').length - 2] != 'About' &&

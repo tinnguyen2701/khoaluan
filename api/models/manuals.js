@@ -23,7 +23,7 @@ const manualSchema = new Schema({
   favorites: Array,
   comments: [
     {
-      name: {
+      username: {
         type: String,
       },
       comment: {
